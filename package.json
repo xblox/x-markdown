@@ -1,0 +1,27 @@
+{
+    "author": "Günter Baumgart",
+    "name": "x-markdow",
+    "version": "0.1.1",
+    "description": "Mardown browser and editor",
+    "contributors": [
+        {
+            "name": "Günter Baumgart",
+            "email": "baumgart.guenter@gmail.com",
+            "url": "http://pearls-media.com/control-freak"
+        }
+    ],
+    "devDependencies": {
+
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/control-freak-ide/x-markdown.git"
+    },
+    "licenses": [
+        {
+            "type": "BSD",
+            "url": "https://github.com/ibm-js/delite/blob/master/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/control-freak-ide/x-markdown/issues"
+}
