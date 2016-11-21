@@ -412,6 +412,7 @@ define([
             }
 
             var res = this.inherited(arguments);
+            var collection = this.collection;
 
             var right = this.__right;
             if(!right) {
@@ -429,7 +430,7 @@ define([
                 }
                 var item = selection[0];
                 if (item.isDir) {
-                    self.collection.open(item).then(function (items) {
+                    collection.open(item).then(function (items) {
                         //folder contains a standard _index.md, render it!
                         var _index = _.find(items, {name: '_index.md'});
                         if (_index) {
@@ -445,6 +446,7 @@ define([
 
             //hook into this.refresh and select first item
             res.then(function () {
+                this.set('collection',collection.getDefaultCollection());
                 this._showHeader(false);
                 this.showStatusbar(false);
                 //pre-select first index item;
