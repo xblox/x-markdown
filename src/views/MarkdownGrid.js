@@ -22,7 +22,10 @@ define([
 
     //template for preview panel
     var MarkdownView = dcl(TemplatedWidgetBase, {
-        templateString: "<div class='widget container MarkdownView'><div class='Page' attachTo='markdown'/></div>"
+        templateString: "<div class='widget container MarkdownView'>" +
+        '<nav style="height:auto;min-height:auto" class="navbar navbar-default navbar-static-top"><button attachTo="editButton" class="btn btn-default" style="float:right"><li class="fa fa-edit"></li> Edit</button></nav>'+
+        "<div class='Page' attachTo='markdown'/>" +
+        "</div>"
     });
 
     function joinUrl(fileItem,url){
@@ -51,6 +54,9 @@ define([
      */
     var MarkdownFileGrid = declare("FileGrid", FileGrid, {
         showdownExtensions:[],
+        getEditorTarget:function(){
+
+        },
         /**
          * The first item to auto select
          * @type {string|int|null}
@@ -359,6 +365,7 @@ define([
             self.fileItem = fileItem;
 
             fileManager.getContent(fileItem.mount, fileItem.path, function (content) {
+                self._lastContent = content;
                 /////////////////////////////////////////////////////////////////////
                 //
                 //  Preview/Showdown update
@@ -368,6 +375,24 @@ define([
                 if (!self.preview) {
                     self.preview = utils.addWidget(self.PREVIEW_CLASS || MarkdownView, null, self, utils.getNode(where), true);
                     where.add(self.preview);
+                    self.preview.$editButton.on('click',function(){
+                        if(self.__bottom){
+                            utils.destroy(self.__bottom);
+                            self.__bottom = null;
+                            self.editor = null;
+                            return;
+                        }
+                        if(!self.__bottom) {
+                            var bottom = self.__bottom = self.getEditorTarget() || self.getBottomPanel(false, 0.5, 'DefaultTab', null, self.__right);
+                            bottom.getSplitter().pos(0.5);
+                        }
+                        if(!self.editor) {
+                            self._isSettingValue = true;
+                            self.editor = self.createMarkdownEditor(fileItem, self._lastContent, bottom, converter, self.preview);
+                            self.editor.set('value', self._lastContent);
+                            self._isSettingValue = false;
+                        }
+                    });
                 }
                 self.preview.$markdown.html(markdown);
                 /////////////////////////////////////////////////////////////////////
@@ -390,6 +415,7 @@ define([
                     self.editor = self.createMarkdownEditor(fileItem, content, bottom, converter, self.preview);
                 }
                 self._isSettingValue = true;
+
                 if(self.editor) {
                     self.editor.item = fileItem;
                     self.editor.set('value', content);
