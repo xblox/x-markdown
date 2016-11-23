@@ -20,10 +20,12 @@ define([
     //links
     var LINKS_EXPRESSION = /href="([^\'\"]+)/g;
 
+    var displayEditButton = has('admin') ? 'block' : 'none';
+
     //template for preview panel
     var MarkdownView = dcl(TemplatedWidgetBase, {
         templateString: "<div class='widget container MarkdownView'>" +
-        '<nav style="height:auto;min-height:auto" class="navbar navbar-default navbar-static-top"><button attachTo="editButton" class="btn btn-default" style="float:right"><li class="fa fa-edit"></li> Edit</button></nav>'+
+        '<nav style="height:auto;min-height:auto;display:'+displayEditButton +';" class="navbar navbar-static-top"><button attachTo="editButton" class="btn btn-default" style="float:right"><li class="fa fa-edit"></li> Edit</button></nav>'+
         "<div class='Page' attachTo='markdown'/>" +
         "</div>"
     });
