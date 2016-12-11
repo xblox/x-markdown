@@ -289,6 +289,7 @@ define([
                     });
 
                 dcl.chainAfter('runAction', EditorClass);
+
                 var self = this;
                 var editor = utils.addWidget(EditorClass, {
                     value: "",
@@ -385,7 +386,7 @@ define([
                             return;
                         }
                         if(!self.__bottom) {
-                            var bottom = self.__bottom = self.getEditorTarget() || self.getBottomPanel(false, 0.5, 'DefaultTab', null, self.__right);
+                            var bottom = self.__bottom = self.getEditorTarget() || self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
                             bottom.getSplitter().pos(0.5);
                         }
                         if(!self.editor) {
@@ -412,7 +413,7 @@ define([
                 //  Create/Update ACE editor and bottom pane
                 //
                 if (!self.__bottom && self.editor !== false && (Editor || self.EDITOR_CLASS)) {
-                    var bottom = self.__bottom = self.getBottomPanel(false, 0.5, 'DefaultTab', null, self.__right);
+                    var bottom = self.__bottom = self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
                     bottom.getSplitter().pos(0.5);
                     self.editor = self.createMarkdownEditor(fileItem, content, bottom, converter, self.preview);
                 }
@@ -442,12 +443,21 @@ define([
             var res = this.inherited(arguments);
             var collection = this.collection;
 
-            var right = this.__right;
-            if(!right) {
-                right = this.getRightPanel(null, null, 'DefaultTab', {});
-                right.closeable(false);
-                right.getSplitter().pos(0.3);
+            function getRight(){
+                var right = self.__right;
+                if(!right) {
+                    right = self.__right = self.getRightPanel(null, null, 'DefaultTab', {});
+                    right._on('destroy',function(){
+                        self.__right=null;
+                        self.preview = null;
+                    });
+
+                    //right.closeable(false);
+                    //right.getSplitter().pos(0.3);
+                }
+                return right;
             }
+
 
             //  - auto render item
             //  - auto render a selected folder's _index.md, if exists
@@ -462,14 +472,14 @@ define([
                         //folder contains a standard _index.md, render it!
                         var _index = _.find(items, {name: '_index.md'});
                         if (_index) {
-                            self.renderMarkdownContent(_index, right, items.filter(function (file) {
+                            self.renderMarkdownContent(_index, getRight(), items.filter(function (file) {
                                 return file != _index;
                             }));
                         }
                     });
                     return;
                 }
-                self.renderMarkdownContent(item, right);
+                self.renderMarkdownContent(item, getRight());
             });
 
             //hook into this.refresh and select first item
