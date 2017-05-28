@@ -10,9 +10,9 @@ define([
     'xdojo/has',
     'xide/$'
 
-], function (declare, dcl, utils, _, TemplatedWidgetBase, Editor, FileGrid, has,$) {
-    var showDown = typeof showdown != 'undefined' ? showdown : null;
-    var hljs = typeof hljs != 'undefined' ? hljs : null;
+], function (declare, dcl, utils, _, TemplatedWidgetBase, Editor, FileGrid, has, $) {
+    var showDown = typeof showdown !== 'undefined' ? showdown : null;
+    var hljs = typeof hljs !== 'undefined' ? hljs : null;
     //images
     var INLINE_IMAGES_EXPRESSION = /!\[(.*?)]\s?\([ \t]*()<?(\S+?)>?(?: =([*\d]+[A-Za-z%]{0,4})x([*\d]+[A-Za-z%]{0,4}))?[ \t]*(?:(['"])(.*?)\6[ \t]*)?\)/g;
     var REFERENCE_IMAGE_EXPRESSION = /!\[([^\]]*?)] ?(?:\n *)?\[(.*?)]()()()()()/g;
@@ -25,12 +25,12 @@ define([
     //template for preview panel
     var MarkdownView = dcl(TemplatedWidgetBase, {
         templateString: "<div class='widget container MarkdownView'>" +
-        '<nav style="height:auto;min-height:auto;display:'+displayEditButton +';" class="navbar navbar-static-top"><button attachTo="editButton" class="btn btn-default" style="float:right"><li class="fa fa-edit"></li> Edit</button></nav>'+
+        '<nav style="height:auto;min-height:auto;display:' + displayEditButton + ';" class="navbar navbar-static-top"><button attachTo="editButton" class="btn btn-default" style="float:right"><li class="fa fa-edit"></li> Edit</button></nav>' +
         "<div class='Page' attachTo='markdown'/>" +
         "</div>"
     });
 
-    function joinUrl(fileItem,url){
+    function joinUrl(fileItem, url) {
         return utils.pathinfo(fileItem.path).dirname.split('/').concat(url.split('/')).join('/')
     }
     /**
@@ -55,8 +55,8 @@ define([
          },container,true);
      */
     var MarkdownFileGrid = declare("FileGrid", FileGrid, {
-        showdownExtensions:[],
-        getEditorTarget:function(){
+        showdownExtensions: [],
+        getEditorTarget: function () {
 
         },
         /**
@@ -73,12 +73,12 @@ define([
          * to this.onLink which routes further to this.onExternalLink or this.onRelativeLink
          * @type {boolean}
          */
-        handleLinks:true,
+        handleLinks: true,
         /**
          * Highlight code in markdown preview if hljs is available
          * @type {boolean}
          */
-        hightlightCode:true,
+        hightlightCode: true,
         /**
          * The instance of our MarkdownView preview
          */
@@ -92,7 +92,7 @@ define([
          * Optional, pass another widget class to render showdown's HTML converter result
          * @type {module:xide/widgets/_Widget}
          */
-        PREVIEW_CLASS:null,
+        PREVIEW_CLASS: null,
         /**
          * The ACE editor instance, set this to false to prevent it
          * @type {module:xace/views/ACEEditor|boolean}
@@ -259,34 +259,34 @@ define([
             if (has('xace')) {
                 var snippetManager = ace.require('ace/snippets').snippetManager;
                 var EditorClass = this.EDITOR_CLASS || dcl(Editor, {
-                        runAction: function (action) {
-                            var editor = this.editor;
-                            var selectedText = editor.session.getTextRange(editor.getSelectionRange());
-                            if (action.command === 'Markdown/Bold') {
-                                if (selectedText === '') {
-                                    snippetManager.insertSnippet(editor, '**${1:text}**');
-                                } else {
-                                    snippetManager.insertSnippet(editor, '**' + selectedText + '**');
-                                }
+                    runAction: function (action) {
+                        var editor = this.editor;
+                        var selectedText = editor.session.getTextRange(editor.getSelectionRange());
+                        if (action.command === 'Markdown/Bold') {
+                            if (selectedText === '') {
+                                snippetManager.insertSnippet(editor, '**${1:text}**');
+                            } else {
+                                snippetManager.insertSnippet(editor, '**' + selectedText + '**');
                             }
-                            if (action.command === 'Markdown/Italic') {
-                                if (selectedText === '') {
-                                    snippetManager.insertSnippet(editor, '*${1:text}*');
-                                } else {
-                                    snippetManager.insertSnippet(editor, '*' + selectedText + '*');
-                                }
-                            }
-                            if (action.command === 'Markdown/Link') {
-                                if (selectedText === '') {
-                                    snippetManager.insertSnippet(editor, '[${1:text}](http://$2)');
-                                } else {
-                                    snippetManager.insertSnippet(editor, '[' + selectedText + '](http://$1)');
-                                }
-                            }
-                            editor.focus();
-                            return this.inherited(arguments);
                         }
-                    });
+                        if (action.command === 'Markdown/Italic') {
+                            if (selectedText === '') {
+                                snippetManager.insertSnippet(editor, '*${1:text}*');
+                            } else {
+                                snippetManager.insertSnippet(editor, '*' + selectedText + '*');
+                            }
+                        }
+                        if (action.command === 'Markdown/Link') {
+                            if (selectedText === '') {
+                                snippetManager.insertSnippet(editor, '[${1:text}](http://$2)');
+                            } else {
+                                snippetManager.insertSnippet(editor, '[' + selectedText + '](http://$1)');
+                            }
+                        }
+                        editor.focus();
+                        return this.inherited(arguments);
+                    }
+                });
 
                 dcl.chainAfter('runAction', EditorClass);
 
@@ -378,20 +378,21 @@ define([
                 if (!self.preview) {
                     self.preview = utils.addWidget(self.PREVIEW_CLASS || MarkdownView, null, self, utils.getNode(where), true);
                     where.add(self.preview);
-                    self.preview.$editButton.on('click',function(){
-                        if(self.__bottom){
-                            utils.destroy(self.__bottom);
-                            self.__bottom = null;
+                    self.preview.$editButton.on('click', function () {
+                        if (self.__botton) {
+                            utils.destroy(self.__botton);
+                            utils.destroy(self.editor);
+                            self.__botton = null;
                             self.editor = null;
                             return;
                         }
-                        if(!self.__bottom) {
-                            var bottom = self.__bottom = self.getEditorTarget() || self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
+                        if (!self.__botton) {
+                            var bottom = self.__botton = self.getEditorTarget() || self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
                             bottom.getSplitter().pos(0.5);
                         }
-                        if(!self.editor) {
+                        if (!self.editor) {
                             self._isSettingValue = true;
-                            self.editor = self.createMarkdownEditor(fileItem, self._lastContent, bottom, converter, self.preview);
+                            self.editor = self.createMarkdownEditor(fileItem, self._lastContent, self.__botton, converter, self.preview);
                             self.editor.set('value', self._lastContent);
                             self._isSettingValue = false;
                         }
@@ -412,20 +413,29 @@ define([
                 //
                 //  Create/Update ACE editor and bottom pane
                 //
-                if (!self.__bottom && self.editor !== false && (Editor || self.EDITOR_CLASS)) {
-                    var bottom = self.__bottom = self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
+                if (!self.__botton && self.editor !== false && (Editor || self.EDITOR_CLASS)) {
+                    var bottom = self.__botton = self.getBottomPanel(false, 0.5, 'DefaultTab', null, where);
                     bottom.getSplitter().pos(0.5);
                     self.editor = self.createMarkdownEditor(fileItem, content, bottom, converter, self.preview);
                 }
                 self._isSettingValue = true;
 
-                if(self.editor) {
+                if (self.editor) {
                     self.editor.item = fileItem;
                     self.editor.set('value', content);
                 }
-                self._emit('rendered',self.preview.$markdown);
+                self._emit('rendered', self.preview.$markdown);
                 self._isSettingValue = false;
                 where && where.resize();
+            });
+
+
+            where._on('destroy', function () {
+                utils.destroy(self.editor,true,this);
+                utils.destroy(self.__botton);
+                self.editor = null;
+                self.__botton = null;
+                self.__right = null;
             });
         },
         startup: function () {
@@ -443,17 +453,14 @@ define([
             var res = this.inherited(arguments);
             var collection = this.collection;
 
-            function getRight(){
+            function getRight() {
                 var right = self.__right;
-                if(!right) {
+                if (!right) {
                     right = self.__right = self.getRightPanel(null, null, 'DefaultTab', {});
-                    right._on('destroy',function(){
-                        self.__right=null;
+                    right._on('destroy', function () {
+                        self.__right = null;
                         self.preview = null;
                     });
-
-                    //right.closeable(false);
-                    //right.getSplitter().pos(0.3);
                 }
                 return right;
             }
@@ -470,7 +477,7 @@ define([
                 if (item.isDir) {
                     collection.open(item).then(function (items) {
                         //folder contains a standard _index.md, render it!
-                        var _index = _.find(items, {name: '_index.md'});
+                        var _index = _.find(items, { name: '_index.md' });
                         if (_index) {
                             self.renderMarkdownContent(_index, getRight(), items.filter(function (file) {
                                 return file != _index;
@@ -484,7 +491,7 @@ define([
 
             //hook into this.refresh and select first item
             res.then(function () {
-                this.set('collection',collection.getDefaultCollection());
+                this.set('collection', collection.getDefaultCollection());
                 this._showHeader(false);
                 this.showStatusbar(false);
                 //pre-select first index item;
@@ -496,57 +503,57 @@ define([
             }.bind(this));
 
             //we handle links in this._onClickLink
-            this.handleLinks && this._on('rendered',function(evt){
+            this.handleLinks && this._on('rendered', function (evt) {
                 var links = evt.find("A");
-                _.each(links,function(link){
+                _.each(links, function (link) {
                     var link = $(link);
                     var href = link.attr('href');
-                    if(!href || href.startsWith('#')){
+                    if (!href || href.startsWith('#')) {
                         return;
                     }
-                    link.data('href',href);
-                    link.attr('href',"javascript:void(0)");
+                    link.data('href', href);
+                    link.attr('href', "javascript:void(0)");
                     link.click(self.onLink.bind(self));
                 });
             });
             return res;
         },
-        _findLink:function(element){
+        _findLink: function (element) {
             var url = element.data('href');
-            if(url){
+            if (url) {
                 return url;
             }
             return this._findLink(element.parent());
         },
-        onLink:function(e){
+        onLink: function (e) {
             var link = $(e.target);
             var url = this._findLink(link);
-            if (url.toLowerCase().indexOf('http') == -1 && url.indexOf('https') == -1) {
+            if (url.toLowerCase().indexOf('http') === -1 && url.indexOf('https') === -1) {
                 return this.onRelativeLink(url);
             }
             return this.onExternalLink(url);
         },
-        onExternalLink:function(url){
+        onExternalLink: function (url) {
             //console.log('clicked external link: ',url);
         },
-        onRelativeLink:function(url){
+        onRelativeLink: function (url) {
             var collection = this.collection;
             var self = this;
-            url = joinUrl(this.fileItem,url);
-            var item = collection.getItem(url,true,{
-                checkErrors:true,
-                displayError:false,
-                onError:function(){
+            url = joinUrl(this.fileItem, url);
+            var item = collection.getItem(url, true, {
+                checkErrors: true,
+                displayError: false,
+                onError: function () {
                     console.error('error resolving link : ' + url);
                 }
             });
-            if(item.then){
-                item.then(function(item) {
+            if (item.then) {
+                item.then(function (item) {
                     if (item) {
-                        self.renderMarkdownContent(item)
+                        self.renderMarkdownContent(item);
                     }
-                })
-            }else{
+                });
+            } else {
                 self.renderMarkdownContent(item);
             }
         }
